@@ -122,6 +122,13 @@ fn parse_pkg(map: &mut rfc822::Map, style: PackageType) -> Result<Package, Error
         .inside_out()?
         .unwrap_or_else(Vec::new);
 
+    let maintainer_raw = map.remove_value("Maintainer").one_line_req()?;
+    let maintainer =  ident::read(maintainer_raw).unwrap_or(vec![ident::Identity {
+        name: maintainer_raw.to_string(),
+        email: maintainer_raw.to_string(),
+    }]);
+
+
     Ok(Package {
         name: map.remove_value("Package").one_line_req()?.to_string(),
         version: map.remove_value("Version").one_line_req()?.to_string(),
@@ -133,7 +140,7 @@ fn parse_pkg(map: &mut rfc822::Map, style: PackageType) -> Result<Package, Error
             .unwrap_or(Priority::Unknown),
         arches,
         section: map.remove_value("Section").one_line_req()?.to_string(),
-        maintainer: super::ident::read(map.remove_value("Maintainer").one_line_req()?)?,
+        maintainer,
         original_maintainer,
         homepage: map.remove_value("Homepage").one_line_owned()?,
         style,
