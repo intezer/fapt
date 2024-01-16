@@ -139,7 +139,7 @@ fn parse_pkg(map: &mut rfc822::Map, style: PackageType) -> Result<Package, Error
             .inside_out()?
             .unwrap_or(Priority::Unknown),
         arches,
-        section: map.remove_value("Section").one_line_req()?.to_string(),
+        section: map.remove_value("Section").one_line().unwrap_or(Some("default")).to_string(),
         maintainer,
         original_maintainer,
         homepage: map.remove_value("Homepage").one_line_owned()?,
